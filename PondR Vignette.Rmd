@@ -1,0 +1,123 @@
+---
+title: "PondR Vignette"
+author: "Hank"
+date: "9/27/2018"
+output: html_document
+---
+
+#Introduction
+This package is designed to do calculations, create graphs, and summary tables that would
+be useful to a pond manager. It includes analyses for largemouth bass, bluegill, 
+and redear sunfish, three sportfish species commonly found in small impoundments.
+Future versions of this package may include more species and more analyses.
+
+#Data Formatting
+The dataset that you pass to these functions must have these column titles
+     COLUMN TITLES:
+
+     sp    tl    wt
+
+
+
+
+The sp column must use character vector of standard species codes, but can vary a little bit. The package recognizes the following species codes:
+
+  Largemouth Bass species codes:
+  "LMB" "lmb" 
+
+  Bluegill species codes:
+  "BLG" "blg" "BG" "bg" "blue"
+
+  Redear Sunfish species codes
+  "RES" "res" "RE" "re" "resu"
+
+The `tl` column must be a numeric vector of total lengths in millimeters.
+The `wt` column must be a numeric vector of weights in grams.
+
+In order to demonstrate the functions, simulate some example data
+
+```{r,echo=F}
+BGtl <- rnorm(100, mean= 150, sd = 10)
+LMBtl <- rnorm(100, mean= 290, sd = 10)
+REtl <- rnorm(100, mean= 180, sd = 10)
+
+BGwt <- rnorm(100, mean= 70, sd = 10)
+LMBwt <- rnorm(100, mean= 300, sd = 10)
+REwt <- rnorm(100, mean= 120, sd = 10)
+
+sp=c(rep.int("BG",100),rep.int("LMB",100),rep.int("RE",100))
+     
+dat = data.frame(sp, tl=c(BGtl,LMBtl,REtl), wt=c(BGwt,LMBwt,REwt), stringsAsFactors = F)
+head(dat)
+#we now have a dataframe with 300 fish, 100 of each species.
+```
+
+Load the package.
+```{r}
+source("PondManagement.R")
+```
+#Functions
+There are two functions in the package, both with optional `do.plot=` arguments which plot the data in a user-friendly chart.
+
+The functions are called `PSD()`, `add.Wr()`
+
+##PSD()
+Proportional size distribution is a measure used to characterize the overall size distribution of the fish in a population. Based on accepted species-specific benchmark lengths for different size classes ("stock", "quality", "prefered", "memorable", and "trophy"), a pond owner can determine how many fish of a given size class there are in their pond. The index calculated by the function in this package is the percentage of the fish over stock length that are also larger than a given size class. If the index is close to 100, that means that 100% of the fish are of that size class or greater. Take a look at this example:
+
+
+Calculate the PSD of "quality" length fish for each species. you can change the size class of the PSD you want by
+changing the `type=` argument to "quality", "prefered", "memorable", or "trophy." 
+
+```{r}
+PSD(dat, type="quality")
+```
+The output is a table of the PSD indices for each species. The number in the bass column is 48%. This means that only 48% of the bass over stock length are also "quality" length or greater. The bass in this population are therefore pretty short. Change the mean length of the bass population to 350mm, which is between "quality" and 
+"prefered" length.
+
+```{r}
+LMBtl <- rnorm(100, mean= 350, sd = 10)
+dat = data.frame(sp, tl=c(BGtl,LMBtl,REtl), wt=c(BGwt,LMBwt,REwt), stringsAsFactors = F)
+PSD(dat)
+```
+The number is now 100%, which means all of the fish over stock length are also quality length or longer.
+
+If we compare the PSD indices for bluegill and largemouth bass, we can see whether the pond is "balanced". By adding the `do.plot=T` argument to the PSD function, we can see whether the ratio of the indices is characteristic of a balanced pond or not. First, fix the average bass length to 300mm.
+
+```{r,fig.align="center"}
+LMBtl <- rnorm(100, mean= 300, sd = 10)
+dat = data.frame(sp, tl=c(BGtl,LMBtl,REtl), wt=c(BGwt,LMBwt,REwt), stringsAsFactors = F)
+PSD(dat, type="quality",do.plot=T)
+```
+
+The red triangle shows us what zone the pond is in. If it falls in a zone that says "bass crowded", then the pond owner should increase bass harvest. If the pond is "blue gill crowded", then the pond owner might consider stocking more bass.
+In this plot, it looks like the pond is pretty balanced.
+
+##add.Wr()
+Relative weight is a measurement used in fisheries biology to determine how the weight of an individual of a certain species compares to accepted "standard weights" for that species. In general, fish with a relative weight of 90% are considered in good condition. The `add.Wr()` function in this package calculates the relative weights for each individual in the dataset, and automatically knows the species and standard weights.
+##Example
+
+The `add.Wr()` function calculates the relative weight of each individual and adds a new column to the dataframe.
+```{r}
+dat <- add.Wr(dat) #running the function without assignment returns the dataframe with the added column, but won't store it
+```
+
+We can also plot the relative weights of each individual as a function of total length by including the `do.plot=T` argument in the `add.Wr()` function. This will make a different plot for each species and show how each individual's relative weight compares to the accepted standards of good condition. 
+
+```{r,fig.align="center"}
+dat <- add.Wr(dat, do.plot=T)
+```
+
+If many of the fish are in bad condition (relative weights less than 80%), then the pond owner may consider adding forage, or fertilizing the pond to increase productivity.
+
+This code will make a table of the average weights for each species and save it in your working directory
+```{r,eval=F}
+write.table(tapply(dat$Wr, dat$sp, mean), file="AveWr.docx")
+
+#make a table of the PSDs of each length for each species
+write.table(rbind(PSD(dat, type="quality")[1,],PSD(dat, type="prefered")[1,], PSD(dat, type="memorable")[1,], PSD(dat, type="trophy")[1,]), file="PSDs3.docx")
+```
+
+Questions, comments, or bug reports?
+Contact the author, Henry Hershey
+(mailto:henryjhershey@gmail.com)
+
