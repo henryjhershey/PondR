@@ -50,27 +50,27 @@ PSD = function(x, type=c("quality","preferred","memorable","trophy"),do.plot=F){
         PSDtable[1,1] <- 100*sum(x$tl[x$sp %in% c("LMB","lmb")] >= 300)/sum(x$tl[x$sp %in% c("LMB","lmb")] >= 200)
         PSDtable[1,2] <- 100*sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 150)/sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 80)
         PSDtable[1,3] <- 100*sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 180)/sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 100)
-        return(PSDtable)
+        PSDtable
   }else if (type=="preferred"){
     PSDtable <- data.frame(LMB=NA, BG=NA, RE=NA, row.names = "PSD")
     PSDtable[1,1] <- 100*sum(x$tl[x$sp %in% c("LMB","lmb")] >= 380)/sum(x$tl[x$sp %in% c("LMB","lmb")] >= 200)
     PSDtable[1,2] <- 100*sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 200)/sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 80)
     PSDtable[1,3] <- 100*sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 230)/sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 100)
-    return(PSDtable)
+    PSDtable
     
   } else if (type=="memorable"){
       PSDtable <- data.frame(LMB=NA, BG=NA, RE=NA, row.names = "PSD")
       PSDtable[1,1] <- 100*sum(x$tl[x$sp %in% c("LMB","lmb")] >= 510)/sum(x$tl[x$sp %in% c("LMB","lmb")] >= 200)
       PSDtable[1,2] <- 100*sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 250)/sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 80)
       PSDtable[1,3] <- 100*sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 280)/sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 100)
-      return(PSDtable)
+      PSDtable
       
   }else if (type=="trophy"){
     PSDtable <- data.frame(LMB=NA, BG=NA, RE=NA, row.names = "PSD")
     PSDtable[1,1] <- 100*sum(x$tl[x$sp %in% c("LMB","lmb")] >= 630)/sum(x$tl[x$sp %in% c("LMB","lmb")] >= 200)
     PSDtable[1,2] <- 100*sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 300)/sum(x$tl[x$sp %in% c("BG","BLG", "BG","bg","blue")] >= 80)
     PSDtable[1,3] <- 100*sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 330)/sum(x$tl[x$sp %in% c("RE","re","RES","res","resu")] >= 100)
-    return(PSDtable)
+    PSDtable
     
   }
 
@@ -87,5 +87,6 @@ PSD = function(x, type=c("quality","preferred","memorable","trophy"),do.plot=F){
     text(10,20, "Unfertile")
     text(30,55, "Balanced")
   }
+  return(PSDtable)
 }
 
